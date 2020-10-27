@@ -3,9 +3,9 @@
 module add_one_tb(
 );
 
-    logic [8:0] x;
-    logic [8:0] y_expected;
-    wire logic [8:0] y;
+    logic [7:0] x;
+    logic [7:0] y_expected;
+    wire logic [7:0] y;
 
     initial begin
         $dumpfile("add_one_tb.vcd");
@@ -25,7 +25,7 @@ module add_one_tb(
 
     end
 
-    
+
     add_one dut(
         .x(x),
         .y(y)
