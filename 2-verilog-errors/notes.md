@@ -54,3 +54,13 @@ testbench completing successfully. However, the `clock_enable` functionality has
 been tested in this testbench.
 
 Adding this functionality testing into the testbench shows that the module works as expected.
+
+**v4**
+Compiling the testbench results in no compiler warnings. Looking at the logic used
+inside *or_gate.v*, we can notice that r is combinatorially assigned to potentially
+multiple times in the same path which is BAD. Replacing all the garbage logic with
+the simple combinatorial assignment `r = a|b` leads the testbench to compiling and
+running successfully.
+
+I don't know why the module is called *or_gate.v* instead of *or.v* and it's dumb
+as fuck imo. The style of the module was dogshit and hurt my soul.
