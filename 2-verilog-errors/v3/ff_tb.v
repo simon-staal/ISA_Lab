@@ -7,7 +7,7 @@ module ff_tb();
     initial begin
         $dumpfile("ff_tb.vcd");
         $dumpvars(0, ff_tb);
-        
+
         clk = 0;
         d = 1;
         clock_enable = 1;
@@ -20,34 +20,34 @@ module ff_tb();
         #1;
         d=0;          /* Change the register input to 0. */
         #1;
-        assert(q==1); 
-        d=1;          
+        assert(q==1);
+        d=1;
         #1;
-        assert(q==1); 
+        assert(q==1);
 
         /* falling edge */
         clk = 0;
         #1;
-        assert(q == 1); 
+        assert(q == 1);
         #1;
-        d=0;         
+        d=0;
         #1;
-        assert(q==1); 
-        d=0;          
+        assert(q==1);
+        d=0;
         #1;
-        assert(q==1); 
+        assert(q==1);
 
         /* rising edge */
         clk = 1;
         #1;
         assert(q == 0);
         #1;
-        d=1;         
+        d=1;
         #1;
-        assert(q==0); 
-        d=1;          
+        assert(q==0);
+        d=1;
         #1;
-        assert(q==1); 
+        assert(q==0);
 
 
         $finish;
