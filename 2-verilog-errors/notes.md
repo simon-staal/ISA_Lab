@@ -50,5 +50,7 @@ indicates there must be an incorrect `assert()` at line 50. This is the case, as
 the value of q should not change since there has been no rising clk edge.
 
 Recompiling and running the testbench after having fixed this assert leads to the
-testbench completing successfully. However, the `ce` functionality has not been tested
-in this testbench. 
+testbench completing successfully. However, the `clock_enable` functionality has not
+been tested in this testbench.
+
+Adding this functionality testing into the testbench shows that the module works as expected.

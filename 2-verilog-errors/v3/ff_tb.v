@@ -38,16 +38,17 @@ module ff_tb();
         assert(q==1);
 
         /* rising edge */
+        clock_enable = 0;
         clk = 1;
         #1;
-        assert(q == 0);
+        assert(q == 1);
         #1;
         d=1;
         #1;
-        assert(q==0);
+        assert(q==1);
         d=1;
         #1;
-        assert(q==0);
+        assert(q==1);
 
 
         $finish;
