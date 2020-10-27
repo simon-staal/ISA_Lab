@@ -15,3 +15,14 @@ busses are used as inputs to our 8-bit adder, which is clearly an issue. After
 updating the length of the logic to [7:0] and recompiling no warnings are printed.
 
 Testbench ran successfully after this change
+
+**v2**
+Opening the waveform produced from the testbench shows the output q updating to
+the value of d at the falling clock edge. When switching to *always_ff*, the following
+warning is displayed when compiling:
+```
+ff.v:6 Warning: Synthesis requires the sensitivity list of an always_ff process
+to only be edge sensitive. clk is missing a pos/negedge.
+```
+Adding *posedge* inside our @() removes this compiler error and enables the testbench
+to run successfully
