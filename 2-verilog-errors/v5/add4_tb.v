@@ -10,7 +10,7 @@ module add4_tb();
         $dumpvars(0, add4_tb);
 
         /* Loop over every possible input pattern */
-        
+
         i=0;
         repeat (512) begin
             a=(i>>5)&15;
@@ -18,7 +18,7 @@ module add4_tb();
             cin=i&1;
             true_sum = (a+b+cin);
             #1;
-            
+
             assert( (true_sum & 15) == sum );
             assert( (true_sum >> 4) == cout );
 

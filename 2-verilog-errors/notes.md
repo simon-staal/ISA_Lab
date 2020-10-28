@@ -64,3 +64,54 @@ running successfully.
 
 I don't know why the module is called *or_gate.v* instead of *or.v* and it's dumb
 as fuck imo. The style of the module was dogshit and hurt my soul.
+
+**v5**
+After running and generating the waveform for the testbench, I noticed that the cin
+into the 4-bit adder caused an increase of 8 instead of an increse of 1. This indicates
+that the cin value is being fed into the MSB adder in our 4-bit adder, resulting in
+the inccorect sum being calculated. Looking at *add4.v* we can see this is the case, as
+the cin value into the adder is being used as the cin for the adder performing the MSB calculation.
+
+After reversing the way *carry[4:0]* is treated in the 4-bit adder, and re-compiling
+/ running the testbench we can now see that the adder works as intended.
+
+Using the same testbenching strategy of testing every possible combination would not work
+for a 32-bit adder. For a 4-bit adder this method uses 2^9 combinations (4 + 4 + 1)
+but for a 32-bit adder it would require 2^65 combinations (3.7e19) which would take
+too long to calculate (and would more than likely overflow the container for i)
+
+To create a 32-bit adder from full-adders, I used the following generate loop:
+```
+genvar i;
+generate
+    for(i = 0; i < 32; i=i+1) begin
+        fadd faddi(a[i],b[i],carry[i],sum[i],carry[i+1]);
+    end
+endgenerate
+```
+This should hopefully create 32 instances of fadders to perform the calculations on
+each bit.
+
+To test this module I copied the testbench for the 4-bit adder, which will only test
+the first 512 combinations of inputs.
+The testbench initially failed the assertions, and after opening the waveform I
+noticed this was because the the checks performed using true_sum hadn't been updated
+to work for 32 bits. The conditions were updated to the following:
+```
+assert( (true_sum & 32'hFFFFFFFF) == sum );
+assert( (true_sum >> 32) == cout );
+```
+This now led the testbench to compile and run successfully.
+
+One final test I wanted to run was to check if the adder worked for the largest
+possible values of a, b and cin:
+```
+//Test max values
+a = 32'hFFFFFFFF;
+b = 32'hFFFFFFFF;
+cin = 1;
+#1;
+assert( 32'hFFFFFFFF == sum );
+assert( 1 == cout );
+```
+This test also ran successfully.
