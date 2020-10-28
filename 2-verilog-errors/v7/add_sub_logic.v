@@ -10,10 +10,10 @@ module add_sub_logic(
 
     always_comb begin
         case(op)
-        0:  begin adder_a = a;    adder_b = b;    adder_cin = 0; end
-        1:  begin adder_a = a;    adder_b = ~b;   adder_cin = 1; end
-        2:  begin adder_a = 0;    adder_b = ~b;    adder_cin = 0; end
-        3:  begin adder_a = a;    adder_b = ~b;   adder_cin = 1; end
+        0:  begin adder_a = a;    adder_b = b;    adder_cin = 0; end //a+b
+        1:  begin adder_a = a;    adder_b = ~b;   adder_cin = 1; end //a-b
+        2:  begin adder_a = 0;    adder_b = ~b;    adder_cin = 0; end //not b
+        3:  begin adder_a = a;    adder_b = ~b;   adder_cin = 1; end //a>b
         endcase
     end
 
@@ -24,6 +24,6 @@ module add_sub_logic(
         .r(adder_r)
     );
 
-    assign r = (op==3) ? adder_r[16] : adder_r[15:0];
+    assign r = (op==3) ? adder_r[16] : adder_r[15:0]; //Returns cout for 3
 
 endmodule

@@ -149,3 +149,77 @@ combination an input was generated for each possible value of count (0-16) to en
 that the component can correctly identify every possible value. This approach is
 particularly relevant for larger components (32-bit+) where exhaustively testing
 every possiblity becomes impossible.
+
+**v7**
+Running and compiling the testbench outputs the following errors:
+```
+ERROR: add_sub_logic_tb.v:35:
+       Time: 5 Scope: add_sub_logic_tb
+ERROR: add_sub_logic_tb.v:45:
+       Time: 7 Scope: add_sub_logic_tb
+ERROR: add_sub_logic_tb.v:49:
+       Time: 8 Scope: add_sub_logic_tb
+```
+The first error corresponds to the following snippet (line 35):
+```
+op=2; a=7;  b=11;
+#1;
+assert(!r);
+```
+This operation is meant to output r = ~b, which in this case would mean r=0xFFF4
+This clearly shows that the assert is incorrect, and should be changed to
+`assert(r == 16'hFFF4)` or ~~`assert(!r == 11)`~~ <-(doesn't work)
+
+After updating the snippet to:
+```
+op=2; a=7;  b=11;
+#1;
+assert(r==16'hfff4);
+```
+Our testbench now outputs:
+```
+ERROR: add_sub_logic_tb.v:45:
+       Time: 7 Scope: add_sub_logic_tb
+ERROR: add_sub_logic_tb.v:49:
+       Time: 8 Scope: add_sub_logic_tb
+```
+Indicating that we have solved the line 35 issue. The following error (line 45)
+corresponds to:
+```
+op=3; a=3; b=10;
+#1;
+assert(r==16'hfff5);
+```
+Looking at our ALU we can see that *op=3* should return the cout of the operation
+a-b (equivalent to a>b), meaning that r should be equal to 0 in this case as the carry out of the
+operation will be 0. Replacing the assert condition with `assert(r==0)` or
+`assert(!r)` solves this issue.
+We can observe a similar issue for the final error, corresponding to line 49:
+```
+op=3; a=10; b=3;
+#1;
+assert(r==16'hfffC);
+```
+Where this time the carry-out of the operation will be equal to 1, so the assert
+condition should be `assert(r==1)`
+After having made these changes the testbench compiles and runs successfully.
+
+Assuming that the purpose of op=3 is a>b, an interesting edge-case is presented
+when a = b. In these cases, there is going to be a *cout=1*, so this operation
+might instead be a>=b. Additionally, this operation doesn't for -ve values of a or b
+where the 2s complement encoding causes weird behaviour, for example:
+```
+op=3; a=12; b=-1;
+#1;
+assert(r==1);
+```
+causes an error in the testbench, where intuitively the operation should return 0.
+
+For these situations where it is unclear if the testbench or original module is
+incorrect, it is important to refer back to the purpose of the module (which would've
+been good to know here...)
+
+When testbenching complex components like ALUs, it's important to consider the
+widest possible variety of input cases, and write testbenches which incorporate these.
+Edge cases such as -ve inputs, 0 inputs, or MAX_SIZE inputs are all important cases
+to consider when testing these componennts.

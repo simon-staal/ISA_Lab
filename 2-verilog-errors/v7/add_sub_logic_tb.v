@@ -32,21 +32,33 @@ module add_sub_logic_tb();
 
         op=2; a=7;  b=11;
         #1;
-        assert(!r);
+        assert(r==16'hfff4);
 
         op=2; a=11; b=7;
         #1;
-        assert(r);
+        assert(r); //Contradicts previous assert of !r
 
         /* op==3 */
 
         op=3; a=3; b=10;
         #1;
-        assert(r==16'hfff5);
+        assert(r==0);
 
         op=3; a=10; b=3;
         #1;
-        assert(r==16'hfffC);
+        assert(r==1);
+
+        /* Understanding the purpose of op==3 */
+
+        op=3; a=12; b=7;
+        #1;
+        assert(r==1);
+
+        op=3; a=64; b=65;
+        #1;
+        assert(r==0);
+
+        //Returns (a>=b)
     end
 
     add_sub_logic dut(

@@ -124,8 +124,8 @@ Fix the test-bench.
 
 Discussion:
 
-- In this case the circuit and test-bench were developed independently, and it was initially unclear which one was correct. What
-  could (or should) help resolve such situations?
+- In this case the circuit and test-bench were developed independently, and it was initially unclear which one was correct.
+    What could (or should) help resolve such situations?
 - The case `op==3` in `add_sub_logic` has some edge-cases. What types of inputs (values of `a` and `b`) would be worth
     testing?
 - The total set of possible inputs is very large. How might you create an "interesting" set of inputs that
