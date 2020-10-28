@@ -115,3 +115,37 @@ assert( 32'hFFFFFFFF == sum );
 assert( 1 == cout );
 ```
 This test also ran successfully.
+
+**v6**
+Looking through the test bench, everything seems to make sense and after compiling
+and running the testbench everything works fine. However, upon closer inspection,
+the repeat loop happens 1 too few times. After updating the repeat value to 2^16
+in order to exhaustively test every possibility, I re-compiled and ran the testbench.
+After visualising the waverform, the bug was revealed, both the *count* and *count_ref*
+values for *x = 0xFFFF* were 0 instead of 16. *count_ref* is stored in a 4-bit logic
+instead of a 5-bit logic, so the value overflows. After fixing this issue in the
+testbench, I re-compiled and ran the testbench:
+```
+FATAL: hamming16_tb.v:29: Mis-match : x=1111111111111111, count= 0, count_ref=16
+       Time: 65536 Scope: hamming16_tb
+```
+We can now see that the test-bench correctly identifies the issue in hamming16_t.
+Looking inside *hamming16.v* we can see that the bug arises from the same overflow
+issue that was present in the testbench, as *count_sum* is also stored in a 4-bit
+logic instead of 5-bit. After fixing this issue, our testbench now compiles and
+runs sucessfully.
+
+From this we can see the risk of having the same person design the circuit and testbench,
+as any of these 'carry-over' errors can lead to being unable to recognise flaws in design.
+It is less likely for 2 people to make the same oversight of making the *count* logic
+too small, hopefully catching out the error. The advantage of this heirarchal composition
+style is that it allows you to build in complexity more easily, constructing more
+complex components out of simpler components rather than building complex components
+from scratch.
+
+Testbenching for this component could be done instead for particular values of count.
+This bug in the testbenching would have been avoided if intead of running through
+combination an input was generated for each possible value of count (0-16) to ensure
+that the component can correctly identify every possible value. This approach is
+particularly relevant for larger components (32-bit+) where exhaustively testing
+every possiblity becomes impossible.

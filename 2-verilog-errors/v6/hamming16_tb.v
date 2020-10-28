@@ -1,5 +1,5 @@
 module hamming16_tb();
-    
+
 
     logic[15:0] x;
     logic[4:0]  count;
@@ -10,13 +10,13 @@ module hamming16_tb();
     );
 
     integer i;
-    logic[3:0] count_ref;
+    logic[4:0] count_ref;
     initial begin
         $dumpfile("hamming16_tb.vcd");
         $dumpvars(0, hamming16_tb);
-        
+
         x = 0;
-        repeat (65535) begin
+        repeat (65536) begin
             /* Calculate reference count sequentially. Not synthesisable. */
             count_ref=0;
             for (i=0; i<16; i++) begin
