@@ -28,7 +28,7 @@ module multiplier_parallel_tb(
 
         repeat (100) begin
             @(negedge clk)
-            $display("a=%d, b=%d, r=%d", a, b, r);
+            //$display("a=%d, b=%d, r=%d", a, b, r);
             assert(a*b == r) else $fatal(1, "Product is wrong.");
 
             a = a+32'h23456789;

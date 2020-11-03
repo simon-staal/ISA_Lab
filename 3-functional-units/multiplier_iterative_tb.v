@@ -39,7 +39,7 @@ module multiplier_iterative_tb(
                 @(posedge clk);
                 #1;
             end
-            $display("a=%d, b=%d, r=%d,  time=%t", a, b, r, $time);
+            //$display("a=%d, b=%d, r=%d,  time=%t", a, b, r, $time);
 
             a = a+1;
             b = b+1;
@@ -58,7 +58,7 @@ module multiplier_iterative_tb(
                 @(posedge clk);
                 #1;
             end
-            $display("a=%d, b=%d, r=%d", a, b, r);
+            //$display("a=%d, b=%d, r=%d", a, b, r);
             assert(a*b == r) else $fatal(1, "Product is wrong.");
 
             a = a+32'h23456789;

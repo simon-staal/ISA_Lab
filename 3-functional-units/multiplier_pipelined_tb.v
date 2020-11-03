@@ -54,7 +54,7 @@ module multiplier_pipelined_tb(
             @(posedge clk)
             // Collect output 1ns after clock edge
             #1;
-            $display("a=%d, b=%d, r=%d", a, b, r);
+            //$display("a=%d, b=%d, r=%d", a, b, r);
             assert( r == a_d2 * b_d2 ) else $fatal(2, "Wrong output.");
         end
 
