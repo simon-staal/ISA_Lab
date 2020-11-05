@@ -178,3 +178,36 @@ to (100ps)
   don't do this guys.
 
 **Simple Testbench**
+- `$timeformat(-9, 1, " ns", 20);` specifies the `%t` format specifier. The parameters represent the following:
+  - *unit_number* is the smallest precision, represents the power of 10 (i.e. -9 = 10^-9 = 1ns)
+  - *precision* represents the number of fractional digits for the current timescale
+  - *suffix_string* is an option to display the scale alongside the real time values
+  - *minimum field width* suggests the minimum number of characters used to display the time
+- The testbench uses a single `initial` block to test some of the functionality
+  of the module with manual delays / clk management:
+  - Ensures reset makes read_data_a = 0
+  - Writes 3 into reg0
+  - Writes 7 into reg1 and checks output of reg0 = 3
+  - Writes 10 into reg0 and checks output of reg1 = 7
+- Overall a very simple testbench, only tests the functionality of 2 registers,
+  and doesn't test if reset clears values (only checks reset at the start)
+
+**Random Testbench**
+- The module is called *register_file_tb* and not *register_file_tb_random*, which
+  is inconsistent with the name of the file (experienced some minor compilation issues)
+- Contains `localparam` which allow us to declare constants to alter the testbench,
+  i.e. number of cycles to run or number and cycles before exiting with an error.
+- Contains the timing for the clk / 'housekeeping' in a seperate `initial` block.
+- In the testing `initial` loop, a copy of the registers *shadow* contains our
+  expected values for the output of the registers. At the start of the simulation
+  reset is triggered to ensure all values are set to 0.
+- The testbench uses `$urandom()` and `urandom_range(maxval, minval)` to generate
+  random numbers. These system functions generate a random unsigned 32-bit integer
+  and an unsinged intiger in a specified range
+- This ensures that a high variation in inputs is provided to the module being tested,
+  as every input is randomised. The rest of the block updates the values in the
+  *shadow* copy of our registers to ensure that the outputs match.
+- A very powerful general case test-bench, allows us to test a high number of possibilites
+  without manually creating many different combinations of inputs. However specific
+  edge cases should still be tested (although in this case I can't think of any
+  particular ones that should be tested)
