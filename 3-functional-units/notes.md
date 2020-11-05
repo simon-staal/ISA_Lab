@@ -147,4 +147,34 @@ inputs and outputs the result 1 cycle later.
 Register File
 -------------
 Implementation for a 16-bit register file containing 4 registers. Supports read
-and write functionality. New syntax `\`timescale 1ns/100ps` 
+and write functionality. New syntax \`timescale 1ns/100ps specifies time scale
+of the module (\#1 = 1ns) and the time precision, or what times will be rounded
+to (100ps)
+
+**v0**
+- Combinatorially outputs the value stored in the register selected by read_index_a
+  (represents mux gate). If reset is enabled 0 is outputted.
+- `else read_data_a = 16'hxxxx` means that the output is set to an unknown /
+  don't care 16-bit value, this branch should never be triggered.
+- Assigns the incoming value at the next clock edge in the register selected by
+  write_index if write_enable is high, or sets the value to 0 if reset is enabled.
+- Uses 1-line if / else statements
+
+**v1**
+- Same logic as v0, but uses the [case statement](chipverify.com/verilog/verilog-case-statement)
+  to represent the same logic.
+
+**v2**
+- This module uses `logic[15:0] regs[3:0]`, which creates an array containg 4 16-bit
+  registers (I think).
+- `logic[15:0] reg_0, reg_1` are used to bring the array signals out, allowing us
+  to view them in waveforms, and are strictly for troubleshooting (will be optimised
+  out in synthesis). I have commented these out.
+- Uses `integer index` to loop through all registers in the array to reset them.
+- Logic is fundementally the same to previous versions, written more concisely.
+
+**v3**
+- Uses chained ternary operators (why...) for *extremely legible* code. Please
+  don't do this guys.
+
+**Simple Testbench**

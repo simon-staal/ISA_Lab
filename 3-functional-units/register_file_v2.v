@@ -16,10 +16,11 @@ module register_file(
 
     /*  Can be useful to bring array signals out - allows us to view them in waveforms.
         Will be optimised out for synthesis.
-    */
+
     logic[15:0] reg_0, reg_1;
     assign reg_0 = regs[0];
     assign reg_1 = regs[1];
+    */
 
     assign read_data_a = reset==1 ? 0 : regs[read_index_a];
 
