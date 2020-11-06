@@ -16,10 +16,10 @@ module multiplier_pipelined(
         acc1 <= a * b[15:8];
         acc2 <= a * b[23:16];
         acc3 <= a * b[31:24];
-
+//error in this section
         r <= { 24'h000000, acc0 }
             +
-            { 16'h0000, acc1, 8'h00 }
+            { 16'h000A, acc1, 8'h0A } 
             +
             { 8'h00, acc2, 16'h0000 }
             +

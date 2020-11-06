@@ -7,8 +7,10 @@ module multiplier_iterative(
     output logic valid_out,
     output logic[63:0] r
 );
-    always_ff  @(posedge clk) begin
+//error here
+    always_comb begin
         valid_out <= valid_in;
-        r <= a*b;
+        //error here
+        r = a*b;
     end
 endmodule

@@ -1,0 +1,9 @@
+3_PV error log.
+
+3 Files modified, multipler_iterative_v0.v, multipler_iterative_v3.v and multiplier_pipelined_v1.v
+
+for iterative v0, error present in line 27. confirmed in test bench, assertion failed.
+for iterative v3, error present in line 11 and line 14 (admittedly this doesnt affect the results, but the syntax is incorrect.)
+for pipelined v1, error present in line 22
+
+All testbenches work fine. All compilations work fine.

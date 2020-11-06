@@ -21,8 +21,10 @@ module multiplier_iterative(
             acc_next = 0;
             i_next = 0;
         end
+        
         else if (i != 32) begin
-            acc_next = acc + ( mp[0] ? mc : 0 );
+            //change made here
+            acc_next = acc + ( (mp&32'h1111111) ? mc : 0 );
             mp_next = mp>>1;
             mc_next = mc<<1;
             i_next = i + 1;
