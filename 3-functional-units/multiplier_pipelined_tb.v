@@ -4,7 +4,7 @@ module multiplier_pipelined_tb(
 );
     logic clk;
     logic[31:0] a, b;
-    logic[63:0] r;
+    logic[62:0] r;
 
     localparam integer STEPS = 10000;
 
@@ -39,7 +39,7 @@ module multiplier_pipelined_tb(
     logic[31:0] a_d2, b_d2;
 
     /* Delay inputs by two cycles */
-    always_ff @(posedge clk) begin
+    always @(clk) begin
         a_d1 <= a;
         b_d1 <= b;
         a_d2 <= a_d1;
