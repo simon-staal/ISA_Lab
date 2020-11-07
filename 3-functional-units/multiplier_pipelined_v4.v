@@ -26,10 +26,10 @@ module multiplier_pipelined(
         pp_q2_q0 <= a_q2 * b_q0;    pp_q2_q1 <= a_q2 * b_q1;    pp_q2_q2 <= a_q2 * b_q2;
 
         r <=    pp_q0_q0 +
-                ((pp_q0_q1 + pp_q1_q0)<<11) +
-                ((pp_q0_q2 + pp_q1_q1 + pp_q2_q0)<<22) +
-                ((pp_q1_q2 + pp_q2_q1)<<33) +
-                ((pp_q2_q2)<<44);
+        		((pp_q2_q2)<<11)+
+                ((pp_q1_q2 + pp_q2_q1)<<22) +
+                ((pp_q0_q2 + pp_q1_q1 + pp_q2_q0)<<33) +
+                ((pp_q0_q1 + pp_q1_q0)<<44) ;
     end
     
 endmodule
