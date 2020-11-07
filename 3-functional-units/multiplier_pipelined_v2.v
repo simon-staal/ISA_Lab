@@ -15,12 +15,12 @@ module multiplier_pipelined(
     
     assign a_hi = a[31:16];
     assign a_lo = a[15:0];
-    assign b_hi = b[31:16];
-    assign b_lo = b[15:0];
+    assign b_hi = b[15:0];
+    assign b_lo = b[31:16];
 
     always_ff @(posedge clk) begin
-        pp_lo_lo <= a_lo * b_lo;
-        pp_hi_lo <= a_hi * b_lo;
+        pp_lo_lo <= a_hi * b_lo;
+        pp_hi_lo <= a_lo * b_lo;
         pp_lo_hi <= a_lo * b_hi;
         pp_hi_hi <= a_hi * b_hi;
 
