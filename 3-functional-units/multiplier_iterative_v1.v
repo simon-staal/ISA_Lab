@@ -7,8 +7,8 @@ module multiplier_iterative(
     output logic valid_out,
     output logic[63:0] r
 );
-    logic[31:0] mp, mp_next;
-    logic[63:0] mc, mc_next;
+    logic[31:0] mc, mc_next;
+    logic[63:0] mp, mp_next;
     logic[63:0] acc, acc_next;
     logic[5:0] i, i_next;
 
@@ -29,7 +29,7 @@ module multiplier_iterative(
                 i_next=32;
             else
                 i_next = i + 1;
-        
+
         end
     end
 

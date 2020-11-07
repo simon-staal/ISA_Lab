@@ -21,7 +21,7 @@ module multiplier_iterative(
             acc_next = 0;
             i_next = 0;
         end
-        else if (i != 32) begin
+        else if (i != 31) begin
             acc_next = acc + ( mp[0] ? mc : 0 );
             mp_next = mp>>1;
             mc_next = mc<<1;
@@ -34,7 +34,7 @@ module multiplier_iterative(
         mc <= mc_next;
         acc <= acc_next;
         i <= i_next;
-        if (i_next==32) begin
+        if (i_next==31) begin
             r <= acc_next;
             valid_out <= 1;
         end
