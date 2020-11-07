@@ -36,10 +36,11 @@ module multiplier_iterative(
         i <= i_next;
         if (i_next==32) begin
             r <= acc_next;
-            valid_out <= 1;
+            valid_out <= valid_in;
         end
         else begin
-            valid_out <= 0;
+            r <= acc_next;
+            valid_out <= 1;
         end
     end
 endmodule
