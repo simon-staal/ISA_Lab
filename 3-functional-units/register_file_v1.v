@@ -28,7 +28,7 @@ module register_file(
         end
     end
 
-    always_ff @(posedge clk) begin
+    always_comb (*) begin
         if (reset==1) begin
             reg0 <= 0;
             reg1 <= 0;
