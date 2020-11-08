@@ -56,7 +56,7 @@ module register_file_tb_simple(
         /* Falling edge */
         #5 clk = 0;
         /* Check outputs */
-        assert(read_data_a==0);
+        assert(read_data_a==3);
         /* Drive new inputs */
         reset = 1;
         read_index_a = 1;

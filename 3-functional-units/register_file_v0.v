@@ -27,7 +27,7 @@ module register_file(
     end
 
     logic[15:0] value;
-    assign value = reset!=1 ? 0 : write_data;
+    assign value = reset==1 ? 0 : write_data;
 
     always @(posedge clk) begin
         if (reset==1 || (write_index==0 && write_enable==1)) reg0 <= value;
