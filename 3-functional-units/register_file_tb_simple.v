@@ -44,6 +44,7 @@ module register_file_tb_simple(
         /* Check outputs */
         assert(read_data_a==0);
         /* Drive new inputs */
+        reset = 0;
         read_index_a = 0;
         write_index = 1;
         write_data = 7;
@@ -55,8 +56,9 @@ module register_file_tb_simple(
         /* Falling edge */
         #5 clk = 0;
         /* Check outputs */
-        assert(read_data_a==3);
+        assert(read_data_a==0);
         /* Drive new inputs */
+        reset = 1;
         read_index_a = 1;
         write_index = 0;
         write_data = 10;
@@ -68,7 +70,7 @@ module register_file_tb_simple(
         /* Falling edge */
         #5 clk = 0;
         /* Check outputs */
-        assert(read_data_a==7);
+        assert(read_data_a==0);
     end
 
 

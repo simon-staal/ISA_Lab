@@ -1,4 +1,3 @@
-
 module multiplier_pipelined(
     input clk,
     input logic[31:0] a,

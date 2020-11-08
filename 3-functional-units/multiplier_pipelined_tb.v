@@ -1,12 +1,10 @@
-
-
 module multiplier_pipelined_tb(
 );
     logic clk;
     logic[31:0] a, b;
     logic[63:0] r;
 
-    localparam integer STEPS = 10000;
+    integer STEPS = 10000;
 
     initial begin
         $dumpfile("multiplier_pipelined_tb.vcd");
@@ -34,7 +32,6 @@ module multiplier_pipelined_tb(
             b = b+32'h34567891;
         end
     end
-
     logic[31:0] a_d1, b_d1;
     logic[31:0] a_d2, b_d2;
 
@@ -45,7 +42,7 @@ module multiplier_pipelined_tb(
         a_d2 <= a_d1;
         b_d2 <= b_d1;
     end
-
+    $finish
     /* Check output of test-bench */
     initial begin
         @(posedge clk);

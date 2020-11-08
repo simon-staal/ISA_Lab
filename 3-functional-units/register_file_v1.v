@@ -15,7 +15,7 @@ module register_file(
     logic[15:0] reg0, reg1, reg2, reg3;
 
     always_comb begin
-        if (reset==1) begin 
+        if (reset==1) begin
             read_data_a = 0;
         end
         else begin

@@ -1,0 +1,24 @@
+Breaking code
+
+multiplier_iterative_v2.v:
+line 27: added brackets to make product wrong
+
+
+multiplier_iterative_tb.v:
+line 63: moved assert(a*b == r) to out of repeat loop and changed $fatal(Product is wrong) to $display(Product is right).
+ 
+
+multiplier_pipelined_tb.v
+line 7: Removed localparam keyword from STEPS
+line 45: Added random "$finish"
+
+multiplier_pipelined_v2.v
+line 21: changed always_ff (@posedge clk) to always_comb
+line 22: changed inputs from <= assignment to = assignment
+
+register_file_tb_simple.v
+line 59: changed assert to read_data_a == 0
+line 73: changed assert to read_data_a == 0
+
+register_file_v0.v
+line 30: changed condition to reset != 1
