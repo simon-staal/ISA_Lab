@@ -6,7 +6,7 @@ line 27: added brackets to make product wrong
 
 multiplier_iterative_tb.v:
 line 63: moved assert(a*b == r) to out of repeat loop and changed $fatal(Product is wrong) to $display(Product is right).
- 
+
 
 multiplier_pipelined_tb.v
 line 7: Removed localparam keyword from STEPS
@@ -22,3 +22,8 @@ line 73: changed assert to read_data_a == 0
 
 register_file_v0.v
 line 30: changed condition to reset != 1
+
+Solution notes:
+Removing localparam keyword from steps seems to have no impact on the running of the pipeline testbench.
+Using an integer seems to let the test-bench run in fundemantally the same way.
+THe difference is that localparams cannot be modified after declaration.
