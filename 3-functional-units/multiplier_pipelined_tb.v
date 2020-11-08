@@ -42,7 +42,7 @@ module multiplier_pipelined_tb(
         a_d2 <= a_d1;
         b_d2 <= b_d1;
     end
-    $finish
+    
     /* Check output of test-bench */
     initial begin
         @(posedge clk);

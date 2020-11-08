@@ -18,10 +18,13 @@ module multiplier_pipelined(
     assign b_hi = b[31:16];
     assign b_lo = b[15:0];
 
-    always_comb begin
-        pp_lo_lo = a_lo * b_lo; pp_hi_lo = a_hi * b_lo; pp_lo_hi = a_lo * b_hi; pp_hi_hi = a_hi * b_hi;
+    always_ff @(posedge clk) begin
+        pp_lo_lo <= a_lo * b_lo;
+        pp_hi_lo <= a_hi * b_lo;
+        pp_lo_hi <= a_lo * b_hi;
+        pp_hi_hi <= a_hi * b_hi;
 
-        r = { pp_hi_hi , 32'h00000000}
+        r <= { pp_hi_hi , 32'h00000000}
              +
              { 32'h00000000, pp_lo_lo}
              +
