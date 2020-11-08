@@ -16,7 +16,10 @@ module multiplier_iterative_tb(
         #5;
 
         repeat (100000) begin
-            #10 clk = ~clk;
+            #10 
+            //clk = ~clk;
+            clk = !clk;
+            //I dont think that error will affect the performance as its still one bit
         end
 
         $fatal(2, "Fail : test-bench timed out without positive exit.");
@@ -58,7 +61,7 @@ module multiplier_iterative_tb(
                 @(posedge clk);
                 #1;
             end
-            //$display("a=%d, b=%d, r=%d", a, b, r);
+            //display("a=%d, b=%d, r=%d", a, b, r);
             assert(a*b == r) else $fatal(1, "Product is wrong.");
 
             a = a+32'h23456789;
@@ -68,6 +71,6 @@ module multiplier_iterative_tb(
         $display("Finished. Total time = %t", $time);
         $finish;
     end
-
-    multiplier_iterative m(clk, valid_out, valid_in, r, a, b);
+//missing the mapping
+    multiplier_iterative m(.clk(clk), .valid_in(valid_in), .valid_out(valid_out), .a(a), .b(b), .r(r));
 endmodule

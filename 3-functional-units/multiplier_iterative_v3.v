@@ -8,7 +8,8 @@ module multiplier_iterative(
     output logic[63:0] r
 );
     always_ff  @(posedge clk) begin
-        assign valid_out = valid_in;
-        assign r = a*b;
+        valid_out <= valid_in;
+        r <= a*b;
+
     end
 endmodule

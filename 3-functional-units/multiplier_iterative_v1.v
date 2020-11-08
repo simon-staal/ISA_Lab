@@ -23,8 +23,8 @@ module multiplier_iterative(
         end
         else if (i != 32) begin
             acc_next = acc + ( mp[0] ? mc : 0 );
-            mp_next = mp<<1;
-            mc_next = mc>>1;
+            mp_next = mp>>1;
+            mc_next = mc<<1;
             if (mp==0)
                 i_next=32;
             else
@@ -33,11 +33,17 @@ module multiplier_iterative(
         end
     end
 
-    always_comb @(posedge clk) begin
+    always_ff @(posedge clk) begin
         mp <= mp_next;
         mc <= mc_next;
         acc <= acc_next;
         i <= i_next;
-        (i_next==5'b11111)? (r <= acc_next, valid_out <= 1) : valid_out <= 0;
+        if (i_next == 32) begin
+            r<=acc_next;
+            valid_out<=1;
+        end 
+        else begin
+            valid_out <= 0;
+        end
     end
 endmodule
