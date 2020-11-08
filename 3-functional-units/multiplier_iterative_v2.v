@@ -24,7 +24,7 @@ module multiplier_iterative(
             i_next = 0;
         end
         else if (i != 8) begin
-            acc_next = (acc + mp_nibble) * mc;
+            acc_next = acc + (mp_nibble * mc);
             mp_next = mp>>4;
             mc_next = mc<<4;
             if (mp==0)
