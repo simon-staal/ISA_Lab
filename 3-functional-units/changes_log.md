@@ -1,4 +1,4 @@
-#Debugging
+Debugging
 
 The errors introduced to the code are located in the iterative implementations of the multiplier. The files were changes were staged are the following:
 1. ``multiplier_iterative_v1.v``
@@ -8,4 +8,4 @@ The errors introduced to the code are located in the iterative implementations o
 
 Happy debugging!
 
-###Salman:)
+Salman:)
