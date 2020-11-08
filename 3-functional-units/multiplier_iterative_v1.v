@@ -22,10 +22,10 @@ module multiplier_iterative(
             i_next = 0;
         end
         else if (i != 32) begin
-            acc_next = acc + ( mp[0] ? mc : 0 );
-            mp_next = mp>>1;
-            mc_next = mc<<1;
-            if (mp==0)
+            acc_next = acc + ( mc[0] ? mp : 0 );
+            mp_next = mp<<1;
+            mc_next = mc>>1;
+            if (mc==0)
                 i_next=32;
             else
                 i_next = i + 1;

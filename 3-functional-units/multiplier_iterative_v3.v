@@ -5,7 +5,7 @@ module multiplier_iterative(
     input logic[31:0] a,
     input logic[31:0] b,
     output logic valid_out,
-    output logic[63:1] r
+    output logic[63:0] r
 );
     always_ff  @(posedge clk) begin
         valid_out <= valid_in;

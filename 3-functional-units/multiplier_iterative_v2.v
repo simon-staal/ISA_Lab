@@ -42,10 +42,10 @@ module multiplier_iterative(
         i <= i_next;
         if (i_next==8) begin
             r <= acc_next;
-            valid_out <= 0;
+            valid_out <= 1;
         end
         else begin
-            valid_out <= 1;
+            valid_out <= 0;
         end
     end
 endmodule

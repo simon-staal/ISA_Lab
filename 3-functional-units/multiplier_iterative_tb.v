@@ -10,7 +10,7 @@ module multiplier_iterative_tb(
 
     localparam TEST_CYCLES = 100;
 
-    localparam TIMEOUT_CYCLES = TEST_CYCLES + 10;
+  //  localparam TIMEOUT_CYCLES = TEST_CYCLES + 10;
 
     initial begin
         $dumpfile("multiplier_iterative.vcd");
@@ -19,7 +19,7 @@ module multiplier_iterative_tb(
 
         #5;
 
-        repeat (2*TIMEOUT_CYCLES) begin
+        repeat (100*TEST_CYCLES) begin
             #10 clk = !clk;
         end
 
@@ -43,7 +43,7 @@ module multiplier_iterative_tb(
                 @(posedge clk);
                 #1;
             end
-            //$display("a=%d, b=%d, r=%d", a, b, r);
+            $display("a=%d, b=%d, r=%d", a, b, r);
             assert(a*b == r) else $fatal(1, "Product is wrong.");
 
             a = $urandom_range(0, 31'hfffffff);
