@@ -16,7 +16,7 @@ module multiplier_iterative_tb(
         #5;
 
         repeat (100000) begin
-            #10 clk = !clk;
+            #10 clk = ~clk;
         end
 
         $fatal(2, "Fail : test-bench timed out without positive exit.");
@@ -39,7 +39,7 @@ module multiplier_iterative_tb(
                 @(posedge clk);
                 #1;
             end
-            //$display("a=%d, b=%d, r=%d,  time=%t", a, b, r, $time);
+            $display("a=%d, b=%d, r=%d,  time=%t", a, b, r, $time);
 
             a = a+1;
             b = b+1;
@@ -69,9 +69,5 @@ module multiplier_iterative_tb(
         $finish;
     end
 
-    multiplier_iterative m(
-        .clk(clk),
-        .valid_in(valid_in), .valid_out(valid_out),
-        .a(a), .b(b), .r(r)
-    );
+    multiplier_iterative m(clk, valid_out, valid_in, r, a, b);
 endmodule
