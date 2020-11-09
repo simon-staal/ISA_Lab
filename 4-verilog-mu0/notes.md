@@ -168,7 +168,7 @@ containing 4096 16-bit regirsters.
 This loop initialises all the values in our RAM to 0 using a `for` loop. If the
 RAM_INIT_FILE parameter is not empty, values are loaded into memory using
 `$readmemh(RAM_INIT_FILE, memory)`
-RAM_INIT_FILE must be of the form memory_file.mem, a text file containing hex values
+RAM_INIT_FILE must be of the form memory_file.txt, a text file containing hex values
 seperated by whitespace.
 
 *write path*
@@ -185,3 +185,36 @@ loop, updating `readdata <= memory[address]` after performing any necessary writ
 in the address provided to the RAM*
 
 **Testbench Notes**
+- Uses the `timeunit` keyword to specify the time unit and time precision of the
+  simulation.
+- Contains 2 `parameters`, RAM_INIT_FILE set to the contents of countdown.hex.txt,
+  the binary for the countdown program and TIMEOUT_CYCLES set to 10000.
+- All necessary logic is declared for the CPU and RAM.
+- Module instances of the RAM and CPU are created using ordered instantiation
+  instead of named instantiation (potentially bad practice).
+- The RAM's RAM_INIT_FILE parameter is overridden in instantiation using the following
+  syntax:
+  `RAM_16x4096_delayX #(RAM_INIT_FILE) ramInst(input_params)`
+  The `#()` allows us to replace the parameter used by ramInst, allowing us to
+  load the values we want into the RAM.
+- The first loop in the testbench is to generate the clock to run our system.
+  Each clock cycle takes 20 time units (in this case 20ns), and repeats a total
+  of TIMEOUT_CYCLES times. If the testbench has not concluded running, it will
+  exit with a fatal error.
+- The second loop runs our CPU by flipping rst to 1, which should put our CPU
+  into our first state. rst is then set back to 0 and we assert that the CPU is
+  now running.
+  The loop
+  ```
+  while (running) begin
+    @(posedge clk);
+  end
+  ```
+  waits for our CPU to stop running, and once this is done the testbench displays
+  that the testbench has finished running and exits successfully.
+
+**RAM_countdown_delay0**
+This file seems like it could be used to test the CPU independantly from the RAM.
+This could be used in parallel with the testbench to ensure that the CPU performs
+all the expected operations for the *countdown* program. If the CPU performs any
+unexpected writes / reads the program will exit with a failure code.
