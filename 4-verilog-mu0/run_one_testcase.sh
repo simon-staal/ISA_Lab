@@ -24,7 +24,7 @@ bin/assembler <test/0-assembly/${TESTCASE}.asm.txt >test/1-binary/${TESTCASE}.he
 iverilog -g 2012 \
    src/CPU_MU0_${VARIANT}.v src/CPU_MU0_${VARIANT}_tb.v src/RAM_*.v \
    -s CPU_MU0_${VARIANT}_tb \
-   -PCPU_MU0_${VARIANT}_tb.RAM_INIT_FILE=\"test/1-binary/${TESTCASE}.hex.txt\" \
+   -P CPU_MU0_${VARIANT}_tb.RAM_INIT_FILE=\"test/1-binary/${TESTCASE}.hex.txt\" \
    -o test/2-simulator/CPU_MU0_${VARIANT}_tb_${TESTCASE}
 
 >&2 echo "  3 - Running test-bench"
@@ -55,7 +55,7 @@ set -e
 sed -e "s/${PATTERN}/${NOTHING}/g" test/3-output/CPU_MU0_${VARIANT}_tb_${TESTCASE}.out-lines > test/3-output/CPU_MU0_${VARIANT}_tb_${TESTCASE}.out
 
 >&2 echo "  4 - Running reference simulator"
-# This is the 
+# This is the
 set +e
 bin/simulator < test/1-binary/${TESTCASE}.hex.txt > test/4-reference/${TESTCASE}.out
 set -e

@@ -277,3 +277,106 @@ This file is to simulate what happens when we run a program by changing the
 values stored in memory and returning the value stored in acc.
 *Note: if ACC is non-zero, this will cause the program to exit with a failure
 code*
+
+Test Scripts
+------------
+There are 4 important test scripts which allow us to compile and run the different
+testcases created for our CPU. Note that run_all.sh builds upon run_all_testcases.sh
+which itself builds upon run_one_testcase.sh.
+
+**General Notes**
+`set -eou pipefail` is used at the start of all of these scripts.
+- `set -e` will cause the whole script to exit if a command fails
+- `set -u` will treat unset variables as errors and immediately exit
+- `set -o pipefail` causes pipelines (`command | command`) to produce a failure
+  code if any command errors (pipelines will only normally return a failure if
+  the last command errors)
+
+To use variables in shell script, simply define them first, then whenever you
+want to use them use `$variable_name`. If you want to concatenate you variable
+with a command, it's important to use `${variable_name}`. This is commonly used
+for repeated text patterns in a script.
+You can also pass command line parameters to scripts. To access these values
+you can use `$1, $2, $3, ...` for the first, second, third parameters etc.
+
+`> /dev/sterr` causes outputs to be printed to `sterr` instead of `stdout`
+This can be also done using `>&2`
+
+**build_utils.sh**
+This is a simple script to understand, it just compiles all the files in utils
+into assembler, simulator and disassembler (unused).
+
+**run_one_testcase.sh**
+This script takes 2 command line parameters which specify the cpu variant and
+testcase being run.
+- The script first runs the assembler on the testcase file specified, capturing
+  the output in test/1-binary as a hex.txt file.
+- Next it compiles the testbench using the appropriate simulator depending on the
+  variant specified.
+  `-P CPU_MU0_${VARIANT}_tb.RAM_INIT_FILE=\"test/1-binary/${TESTCASE}.hex.txt`
+  enables us to directly set values of parameters in the testbench file at compile-time
+- `set +e` is used when running the testbench to disable automatic script failure
+  the simulation could go wrong. The result is captured in test/3-output as a
+  filename.stdout (this is later used for further processing of the output)
+- The exit code of the simulation is captured using `RESULT=$?`
+- `set -e` is re-enabled after running the simulation.
+- An if statement is then used to determine if the simulator returned a failure
+  code, and exits if it did. If statements can be written in bach using the following
+  syntax:
+  ```
+  if [<some tests>]
+  then
+    <commands>
+  fi
+  ```
+  Where everything between the then and fi will be executed if the tests between
+  the square brackest are true. The [] refer to the command [test](https://ss64.com/bash/test.html)
+  which supports many operators. The use of [[]] refers to an extended or new
+  test, which is more versatile than a regular test (i.e. can handle null exceptions)
+  `[["${RESULT}" -ne 0]]` is equivalent to RESULT != 0.
+- Next the script processes the output from .stdout, using [grep](https://man7.org/linux/man-pages/man1/grep.1.html)
+  to spot any lines containing `PATTERN="CPU : OUT   :"` and storing them in
+  <testcase>.out-lines (toggles set +e for this process):
+  `grep "${PATTERN}" test/3-output/CPU_MU0_${VARIANT}_tb_${TESTCASE}.stdout > test/3-output/CPU_MU0_${VARIANT}_tb_${TESTCASE}.out-lines`
+- [sed](https://www.gnu.org/software/sed/manual/sed.html#Overview) is then used to
+  replace "CPU : OUT   :" with an empty string and stores this as <testcase>.out:
+  `sed -e "s/${PATTERN}/${NOTHING}/g" test/3-output/CPU_MU0_${VARIANT}_tb_${TESTCASE}.out-lines > test/3-output/CPU_MU0_${VARIANT}_tb_${TESTCASE}.out`
+  - The `-e` ensures that sed uses the first non-option parameter as the script and
+    the next one as the file to run the script on
+  - The `s` at the start of the first parameter identifies the regular-expression
+    being searched for and the replacement string `s/regexp/replacement/[flags]`
+  - The `g` flag indicates that the contents of the patter space should be replaced
+    by the contents of the hold space (corresponding to regexp and replacement repectively)
+- The script then runs the simulator using the same hex file, capturing the output
+  in test/4-referece/<testcase>.out (once again toggling set +e)
+- The output from the simulator is compared to the output from the verilog file using
+  [diff](https://ss64.com/bash/diff.html), storing the results using `RESULT=$?`
+  `diff -w test/4-reference/${TESTCASE}.out test/3-output/CPU_MU0_${VARIANT}_tb_${TESTCASE}.out`
+  - The `-w` flag ignores all whitespace
+  - `set +e` is also toggled for this process
+- Finally, the script uses an `if else` statement (similar syntax to previous if statement)
+  to determine if the testbench has passed (same as reference output) or failed (different)
+*Note: since all files are produced as .out or .out-lines nothing appears to be
+saved in the test output directories*
+
+**run_all_testcases.sh**
+This script takes a single command-line parameter specifying the cpu variant being
+tested.
+- Uses a wild-card `*` to specify every file with the pattern `TESTCASES="test/0-assembly/*.asm.txt"`
+  is a testcase file.
+- Script then uses a for loop to test every instance of testcase:
+  ```
+  for i in ${TESTCASES}; do
+    execute intructions
+  done
+  ```
+- In order to extract each individiual testcase name, [basename](https://ss64.com/bash/basename.html)
+  is used:
+  `TESTNAME=$(basename ${i} .asm.txt)`
+  This strips the directory and suffix from filenames, then allowing us to pass
+  TESTNAME as one of the command-line parameters for *run_one_testcase*, repeating
+  for each file matching the TESTCASES pattern.
+
+**run_all.sh**
+This is a very simple script, which simply runs *build_utils.sh* and *run_all_testcases*
+for each variant (delay0 and delay1)
