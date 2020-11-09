@@ -218,3 +218,62 @@ This file seems like it could be used to test the CPU independantly from the RAM
 This could be used in parallel with the testbench to ensure that the CPU performs
 all the expected operations for the *countdown* program. If the CPU performs any
 unexpected writes / reads the program will exit with a failure code.
+
+utils
+-----
+This directory contains all the software needed to build and test the circuits.
+
+**mu0.hpp + mu0_*.cpp**
+This header file contains the declarations for a variety of mu0 functions which
+are used in the assembler, disassembler and simulator. The purpose of each function
+is included in the hpp file. These files are pretty self explanatory and
+well-commented, read them if you want to understand how then assembler and simulator
+is actually implemented.
+*Note: mu0_read_binary is defined in mu0_disassembly.cpp*
+
+mu0_opname_to_opcode seems to lack a definition. This is likely because the
+function mu0_is_instruction has been overloaded to directly take a string, so the
+function has probably been refactored as mu0_is_instruction is used directly on
+strings instead of converting. (This should be confirmed when going through the
+other cpp files)
+
+**assembler.cpp**
+This file converts files written in assembly language into a hex binary which can
+then be loaded into our RAM file for simulation.
+It stores data and intructions as a vector of pairs of strings, and labels as a
+map of strings to ints.
+It processes the input file as follows:
+- Streams a string at a time.
+- Checks if the string is a label. If it is it ensures this label has not been
+  used before, then adds it to the map, associating it's value to the line its
+  on (done using size of data_and_inst vector)
+- Then checks if the string is an instruction. If it is it streams the next string
+  in the istream as the address operand of the instruction (if the instruction
+  requires an address), and adds it to data_and_inst as {instr, address}
+- It finally checks if the string is data. If it is it's added to data_and_inst
+  as {data, ""}
+- If the string matches none of these, the assembler exits with an error code.
+
+Next the assembler must output the binary and embed labels. It switches the
+output stream to print everything in 4-digit hex, padding with 0s if necessary.
+It then loops through data_and_inst performing the following:
+- It checks if the first part of the pair is an intruction.
+  - If it is, it loops through a vector of opnames to identify which opcode
+    matches the opname (this likely replaced *mu0_opname_to_opcode*).
+  - Next, it checks the second part of the pair containing the address operand.
+    If the address is a numerical value, it is converted to an integer. If the
+    address corresponds to a label, it checks the map of labels for the
+    appropriate address.
+  - Finally, it combines the opcode and address, printing them as a 4-digit hex
+- Otherwise, the index in the vector must correspond to data, so it is simply
+  printed as a 4-digit hex value.
+
+**disassembler.cpp**
+This file is probably to convert binary back to assembly language, but since it
+is not used by any of the test scripts I've ignored it.
+
+**simulator.cpp**
+This file is to simulate what happens when we run a program by changing the
+values stored in memory and returning the value stored in acc.
+*Note: if ACC is non-zero, this will cause the program to exit with a failure
+code*
