@@ -40,7 +40,7 @@ set -e
 
 # Check whether the simulator returned a failure code, and immediately quit
 if [[ "${RESULT}" -ne 0 ]] ; then
-   echo "  ${VARIANT}, ${TESTCASE}, FAIL"
+   echo "  ${VARIANT}, ${TESTCASE}, FAILURE CODE"
    exit
 fi
 

@@ -41,7 +41,7 @@ module RAM_16x4096_shared(
             memory[address] <= writedata;
         end
         if(DELAY=="delay1") begin
-            readdata <= readdata;
+            readdata <= memory[address];
         end
     end
 endmodule
