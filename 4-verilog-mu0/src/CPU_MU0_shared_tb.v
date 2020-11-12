@@ -23,8 +23,8 @@ module CPU_MU0_shared_tb;
 
     // Generate clock
     initial begin
-        $dumpfile("CPU_MU0_shared.vcd");
-        $dumpvars(0, CPU_MU0_shared_tb);
+        //$dumpfile("CPU_MU0_shared.vcd");
+        //$dumpvars(0, CPU_MU0_shared_tb);
         clk=0;
 
         repeat (TIMEOUT_CYCLES) begin
