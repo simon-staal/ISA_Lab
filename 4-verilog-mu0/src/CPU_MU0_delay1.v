@@ -37,12 +37,11 @@ module CPU_MU0_delay1(
     } opcode_t;
 
     /* Another enum to define CPU states. */
-    typedef enum logic[2:0] {
-        FETCH_INSTR_ADDR = 3'b000,
-        FETCH_INSTR_DATA = 3'b001,
-        EXEC_INSTR_ADDR  = 3'b010,
-        EXEC_INSTR_DATA  = 3'b011,
-        HALTED =      3'b100
+    typedef enum logic[1:0] {
+        FETCH_INSTR_ADDR = 2'b00,
+        EXEC_INSTR_ADDR  = 2'b01,
+        EXEC_INSTR_DATA  = 2'b10,
+        HALTED =      2'b11
     } state_t;
 
     logic[11:0] pc, pc_next;
@@ -50,16 +49,17 @@ module CPU_MU0_delay1(
 
     logic[16:0] instr;
     opcode_t instr_opcode;
-    logic[11:0] instr_constant;    
+    logic[11:0] instr_constant;
 
     logic[1:0] state;
 
     // Decide what address to put out on the bus, and whether to write
-    assign address = (state==FETCH_INSTR_ADDR) ? pc : instr_constant;
-    assign write = state==EXEC_INSTR_DATA ? instr_opcode==OPCODE_STO : 0;
-    assign read = (state==FETCH_INSTR_ADDR) ? 1 : (state==EXEC_INSTR_ADDR && (instr_opcode==OPCODE_LDA || instr_opcode==OPCODE_ADD  || instr_opcode==OPCODE_SUB ));
-    assign writedata = acc;
-
+    always_comb begin
+        address = (state==FETCH_INSTR_ADDR) ? pc : instr_constant;
+        write = state==EXEC_INSTR_DATA ? instr_opcode==OPCODE_STO : 0;
+        read = (state==FETCH_INSTR_ADDR) ? 1 : (state==EXEC_INSTR_ADDR && (instr_opcode==OPCODE_LDA || instr_opcode==OPCODE_ADD  || instr_opcode==OPCODE_SUB ));
+        writedata = acc;
+    end
     // Break-down the instruction into fields
     // these are just wires for our convenience
     assign instr_opcode = instr[15:12];
@@ -79,7 +79,7 @@ module CPU_MU0_delay1(
         state = HALTED;
         running = 0;
     end
-    
+
     /* Main CPU sequential update logic. Where combinational logic is simple, it
         has been incorporated directly here, rather than splitting it into another
         block.
@@ -97,15 +97,11 @@ module CPU_MU0_delay1(
         end
         else if (state==FETCH_INSTR_ADDR) begin
             $display("CPU : INFO  : Fetching (addr), address=%h.", pc);
-            state <= FETCH_INSTR_DATA;
-        end
-        else if (state==FETCH_INSTR_DATA) begin
-            $display("CPU : INFO  : Fetching (data), address=%h.", pc);
-            instr <= readdata;
             state <= EXEC_INSTR_ADDR;
         end
         else if (state==EXEC_INSTR_ADDR) begin
-            $display("CPU : INFO  : Executing (addr), opcode=%h, acc=%h, imm=%h, readdata=%x", instr_opcode, acc, instr_constant, readdata);
+            instr <= readdata;
+            //$display("CPU : INFO  : Executing (addr), opcode=%h, acc=%h, imm=%h, readdata=%x", instr_opcode, acc, instr_constant, readdata);
             state <= EXEC_INSTR_DATA;
         end
         else if (state==EXEC_INSTR_DATA) begin
@@ -173,4 +169,3 @@ module CPU_MU0_delay1(
         end
     end
 endmodule
-

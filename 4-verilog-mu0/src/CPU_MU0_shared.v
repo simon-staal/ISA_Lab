@@ -38,9 +38,9 @@ module CPU_MU0_shared(
 
     /* Another enum to define CPU states. */
     typedef enum logic[1:0] {
-        FETCH_INSTR_ADDR = 2'b00,
-        EXEC_INSTR_ADDR  = 2'b01,
-        EXEC_INSTR_DATA  = 2'b10,
+        FETCH = 2'b00,
+        EXEC_1  = 2'b01,
+        EXEC_2  = 2'b10,
         HALTED =           2'b11
     } state_t;
 
@@ -56,15 +56,15 @@ module CPU_MU0_shared(
     logic[1:0] state;
 
     // Decide what address to put out on the bus, and whether to write
-    assign address = (state==FETCH_INSTR_ADDR) ? pc : instr_constant;
-    assign write = state==EXEC_INSTR_DATA ? instr_opcode==OPCODE_STO : 0;
-    assign read = (state==FETCH_INSTR_ADDR) ? 1 : (state==EXEC_INSTR_ADDR && (instr_opcode==OPCODE_LDA || instr_opcode==OPCODE_ADD  || instr_opcode==OPCODE_SUB ));
+    assign address = (state==FETCH) ? pc : instr_constant;
+    assign write = (state==EXEC_2) ? instr_opcode==OPCODE_STO : 0;
+    assign read = (state==FETCH) ? 1 : ((state==EXEC_1 && (instr_opcode==OPCODE_LDA || instr_opcode==OPCODE_ADD  || instr_opcode==OPCODE_SUB ) && DELAY == "delay1") || (state==EXEC_2 && (instr_opcode==OPCODE_LDA || instr_opcode==OPCODE_ADD  || instr_opcode==OPCODE_SUB ) && DELAY == "delay0"));
     assign writedata = acc;
 
     // Break-down the instruction into fields
     // these are just wires for our convenience
-    assign instr_opcode = instr[15:12];
-    assign instr_constant = instr[11:0];
+    assign instr_opcode = (state==EXEC_1) ? readdata[15:12] : instr[15:12];
+    assign instr_constant = (state==EXEC_1) ? readdata[11:0] : instr[11:0];
 
     // This is used in many places, as most instructions go forwards by one step.
     // Defining it once makes it more likely the synthesis tool will only create
@@ -91,60 +91,60 @@ module CPU_MU0_shared(
     always @(posedge clk) begin
         if (rst) begin
             $display("CPU : INFO  : Resetting.");
-            state <= FETCH_INSTR_ADDR;
+            state <= FETCH;
             pc <= 0;
             acc <= 0;
             running <= 1;
         end
-        else if (state==FETCH_INSTR_ADDR) begin
+        else if (state==FETCH) begin
             $display("CPU : INFO  : Fetching (addr), address=%h.", pc);
             if(DELAY=="delay0") begin
                 instr <= readdata;
-                state <= EXEC_INSTR_DATA;
+                state <= EXEC_2;
             end
             if(DELAY=="delay1") begin
-                state <= EXEC_INSTR_ADDR;
+                state <= EXEC_1;
             end
         end
-        else if (state==EXEC_INSTR_ADDR) begin
-            instr <= readdata;
+        else if (state==EXEC_1) begin
             $display("CPU : INFO  : Executing (addr), opcode=%h, acc=%h, imm=%h, readdata=%x", instr_opcode, acc, instr_constant, readdata);
-            state <= EXEC_INSTR_DATA;
+            instr <= readdata;
+            state <= EXEC_2;
         end
-        else if (state==EXEC_INSTR_DATA) begin
+        else if (state==EXEC_2) begin
             $display("CPU : INFO  : Executing (data), opcode=%h, acc=%h, imm=%h, readdata=%x", instr_opcode, acc, instr_constant, readdata);
             case(instr_opcode)
                 OPCODE_LDA: begin
                     acc <= readdata;
                     pc <= pc_increment;
-                    state <= FETCH_INSTR_ADDR;
+                    state <= FETCH;
                 end
                 OPCODE_STO: begin
                     pc <= pc_increment;
-                    state <= FETCH_INSTR_ADDR;
+                    state <= FETCH;
                 end
                 OPCODE_ADD: begin
                     acc <= acc + readdata;
                     pc <= pc_increment;
-                    state <= FETCH_INSTR_ADDR;
+                    state <= FETCH;
                 end
                 OPCODE_SUB: begin
                     acc <= acc - readdata;
                     pc <= pc_increment;
-                    state <= FETCH_INSTR_ADDR;
+                    state <= FETCH;
                 end
                 OPCODE_JMP: begin
                     pc <= instr_constant;
-                    state <= FETCH_INSTR_ADDR;
+                    state <= FETCH;
                 end
                 OPCODE_JGE: begin
                     if (acc > 0) begin
-                        pc <= acc;
+                        pc <= instr_constant;
                     end
                     else begin
                         pc <= pc_increment;
                     end
-                    state <= FETCH_INSTR_ADDR;
+                    state <= FETCH;
                 end
                 OPCODE_JNE: begin
                     if (acc != 0) begin
@@ -153,12 +153,12 @@ module CPU_MU0_shared(
                     else begin
                         pc <= pc_increment;
                     end
-                    state <= FETCH_INSTR_ADDR;
+                    state <= FETCH;
                 end
                 OPCODE_OUT: begin
                     $display("CPU : OUT   : %d", $signed(acc));
                     pc <= pc_increment;
-                    state <= FETCH_INSTR_ADDR;
+                    state <= FETCH;
                 end
                 OPCODE_STP: begin
                     // Stop the simulation
